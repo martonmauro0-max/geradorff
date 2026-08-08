@@ -228,6 +228,11 @@ BASE_VALUES = {
 STYLE_ADJUST = {"Rush": 5, "Preciso na Cabeca": -5, "Controle Total": 0}
 
 
+@app.route("/sobre")
+def sobre():
+    return render_template("sobre.html")
+
+
 @app.route("/comparar")
 def comparar():
     db = get_db()

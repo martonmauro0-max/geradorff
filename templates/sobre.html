@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span></div>
+  <a class="admin-link" href="{{ url_for('index') }}">Voltar</a>
+</header>
+
+<main class="container">
+  <div class="hero">
+    <h1>Sobre o Gerador FF</h1>
+  </div>
+
+  <div class="glass-card">
+    <p style="margin-bottom:14px; line-height:1.6;">
+      O Gerador de Sensibilidade Free Fire e uma ferramenta gratuita que ajuda
+      jogadores a encontrar configuracoes de sensibilidade adequadas ao seu
+      telemovel e estilo de jogo. Todas as configuracoes sao geradas com base
+      em presets ajustaveis, sem custo e sem necessidade de conta.
+    </p>
+
+    <p style="margin-bottom:14px; line-height:1.6;">
+      Trabalhamos continuamente para adicionar mais marcas e modelos de
+      telemovel a lista disponivel.
+    </p>
+
+    <p style="line-height:1.6;">
+      <strong style="color: var(--neon-yellow);">Nao encontraste o teu telemovel?</strong>
+      Entra em contacto connosco e adicionamos o modelo exato o mais rapido
+      possivel.
+    </p>
+
+    <div class="support-links" style="margin-top:20px;">
+      <a href="https://wa.me/258{{ settings.whatsapp }}" target="_blank">Falar no WhatsApp</a>
+      <a href="mailto:{{ settings.email }}">{{ settings.email }}</a>
+    </div>
+  </div>
+</main>
+
+<footer class="main-footer">
+  <a class="admin-link" href="{{ url_for('index') }}">Voltar ao gerador</a>
+</footer>
+{% endblock %}
