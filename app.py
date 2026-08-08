@@ -10,7 +10,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "database.db")
 
 app = Flask(__name__)
-app.secret_key = "troca-esta-chave-em-producao"
+import secrets as _secrets_module
+app.secret_key = os.environ.get("SECRET_KEY", _secrets_module.token_hex(32))
 
 PHONE_MODELS = {
     "Redmi": ["Redmi Note 8", "Redmi Note 9", "Redmi Note 9 Pro", "Redmi Note 9 Pro Max", "Redmi Note 10", "Redmi Note 10 Pro", "Redmi Note 11", "Redmi Note 12", "Redmi 9", "Redmi 9A", "Redmi 10", "Redmi 10C", "Poco X3", "Poco F3", "Poco M3"],
@@ -136,9 +137,10 @@ def init_db():
 
     cur.execute("SELECT id FROM users WHERE username = 'admin'")
     if not cur.fetchone():
+        initial_password = os.environ.get("ADMIN_INITIAL_PASSWORD", "mudaEstaSenha123")
         cur.execute(
             "INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, 1)",
-            ("admin", generate_password_hash("mudaEstaSenha123")),
+            ("admin", generate_password_hash(initial_password)),
         )
 
 
