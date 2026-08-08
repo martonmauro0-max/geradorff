@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span> - Admin</div>
+  <a class="logout-link" href="{{ url_for('admin_logout') }}">Sair</a>
+</header>
+
+<div class="admin-wrap">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}{% endif %}
+  {% endwith %}
+
+  <div class="admin-menu">
+    <a class="btn-small" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a class="btn-small" href="{{ url_for('admin_configs') }}">Presets</a>
+    <a class="btn-small" href="{{ url_for('admin_devices') }}">Telemoveis</a>
+    <a class="btn-small" href="{{ url_for('admin_settings') }}">Configuracoes</a>
+    <a class="btn-small" href="{{ url_for('admin_audit') }}">Log de Auditoria</a>
+    <a class="btn-small" href="{{ url_for('admin_export_configs') }}">Exportar CSV</a>
+    <a class="btn-small" href="{{ url_for('admin_backup') }}">Backup DB</a>
+  </div>
+
+  <h2 style="margin-bottom:14px;">Estatisticas Reais</h2>
+  <div class="admin-grid">
+    <div class="stat-box">
+      <div class="num">{{ total_uses }}</div>
+      <div class="lbl">Total de geracoes</div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:18px;">
+    <div class="glass-card">
+      <h3 style="margin-bottom:10px;">Por Telemovel</h3>
+      {% set max_device = by_device[0].c if by_device else 1 %}
+      {% for row in by_device %}
+      <div class="bar-row">
+        <div class="bar-label">{{ row.device }} ({{ row.c }})</div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (row.c / max_device * 100) | round }}%;"></div></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="glass-card">
+      <h3 style="margin-bottom:10px;">Por Estilo</h3>
+      {% set max_style = by_style[0].c if by_style else 1 %}
+      {% for row in by_style %}
+      <div class="bar-row">
+        <div class="bar-label">{{ row.style }} ({{ row.c }})</div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (row.c / max_style * 100) | round }}%;"></div></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="glass-card">
+      <h3 style="margin-bottom:10px;">Por Nivel</h3>
+      {% set max_level = by_level[0].c if by_level else 1 %}
+      {% for row in by_level %}
+      <div class="bar-row">
+        <div class="bar-label">{{ row.level }} ({{ row.c }})</div>
+        <div class="bar-track"><div class="bar-fill" style="width: {{ (row.c / max_level * 100) | round }}%;"></div></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="glass-card" style="margin-top:18px;">
+    <h3 style="margin-bottom:10px;">Ultimas geracoes</h3>
+    <table class="data-table">
+      <tr><th>Telemovel</th><th>Estilo</th><th>Nivel</th><th>Data</th></tr>
+      {% for r in recent %}
+      <tr><td>{{ r.device }}</td><td>{{ r.style }}</td><td>{{ r.level }}</td><td>{{ r.created_at }}</td></tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  <div class="glass-card" style="margin-top:18px; max-width:340px;">
+    <h3 style="margin-bottom:10px;">Trocar a minha senha</h3>
+    <form method="POST" action="{{ url_for('admin_change_password') }}">
+      <input type="password" name="new_password" placeholder="Nova senha (min. 6 caracteres)" required
+             style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:var(--text-light); margin-bottom:10px;">
+      <button class="btn-small" type="submit">Atualizar senha</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

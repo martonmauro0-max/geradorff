@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span> - Admin</div>
+  <a class="logout-link" href="{{ url_for('admin_logout') }}">Sair</a>
+</header>
+
+<div class="admin-wrap">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}{% endif %}
+  {% endwith %}
+
+  <div class="admin-menu">
+    <a class="btn-small" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a class="btn-small" href="{{ url_for('admin_configs') }}">Presets</a>
+    <a class="btn-small" href="{{ url_for('admin_devices') }}">Telemoveis</a>
+    <a class="btn-small" href="{{ url_for('admin_settings') }}">Configuracoes</a>
+    <a class="btn-small" href="{{ url_for('admin_audit') }}">Log de Auditoria</a>
+    <a class="btn-small" href="{{ url_for('admin_export_configs') }}">Exportar CSV</a>
+    <a class="btn-small" href="{{ url_for('admin_backup') }}">Backup DB</a>
+  </div>
+
+  <h2 style="margin-bottom:14px;">Presets de Sensibilidade</h2>
+
+  <div class="glass-card">
+    <table class="data-table">
+      <tr>
+        <th>Telemovel</th><th>Estilo</th><th>Nivel</th>
+        <th>Geral</th><th>Red Dot</th><th>2x</th><th>4x</th><th>Sniper</th><th>Free Look</th><th></th>
+      </tr>
+      {% for c in configs %}
+      <tr>
+        <form method="POST" action="{{ url_for('admin_update_config', config_id=c.id) }}">
+        <td>{{ c.device }}</td>
+        <td>{{ c.style }}</td>
+        <td>{{ c.level }}</td>
+        <td><input type="number" name="general" value="{{ c.general }}" min="1" max="100"></td>
+        <td><input type="number" name="red_dot" value="{{ c.red_dot }}" min="1" max="100"></td>
+        <td><input type="number" name="scope_2x" value="{{ c.scope_2x }}" min="1" max="100"></td>
+        <td><input type="number" name="scope_4x" value="{{ c.scope_4x }}" min="1" max="100"></td>
+        <td><input type="number" name="sniper" value="{{ c.sniper }}" min="1" max="100"></td>
+        <td><input type="number" name="free_look" value="{{ c.free_look }}" min="1" max="100"></td>
+        <td><button class="btn-small" type="submit">Salvar</button></td>
+        </form>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

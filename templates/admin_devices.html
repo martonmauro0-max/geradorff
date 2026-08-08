@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span> - Admin</div>
+  <a class="logout-link" href="{{ url_for('admin_logout') }}">Sair</a>
+</header>
+
+<div class="admin-wrap">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}{% endif %}
+  {% endwith %}
+
+  <div class="admin-menu">
+    <a class="btn-small" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a class="btn-small" href="{{ url_for('admin_configs') }}">Presets</a>
+    <a class="btn-small" href="{{ url_for('admin_devices') }}">Telemoveis</a>
+    <a class="btn-small" href="{{ url_for('admin_settings') }}">Configuracoes</a>
+    <a class="btn-small" href="{{ url_for('admin_audit') }}">Log de Auditoria</a>
+    <a class="btn-small" href="{{ url_for('admin_export_configs') }}">Exportar CSV</a>
+    <a class="btn-small" href="{{ url_for('admin_backup') }}">Backup DB</a>
+  </div>
+
+  <h2 style="margin-bottom:14px;">Telemoveis Cadastrados</h2>
+
+  <div class="glass-card" style="max-width:420px;">
+    <h3 style="margin-bottom:10px;">Adicionar novo telemovel</h3>
+    <form method="POST">
+      <input type="text" name="name" placeholder="Ex: Redmi Note 13 Pro" required
+             style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:var(--text-light); margin-bottom:10px;">
+      <button class="btn-small" type="submit">Adicionar</button>
+    </form>
+  </div>
+
+  <div class="glass-card">
+    <table class="data-table">
+      <tr><th>Nome</th><th></th></tr>
+      {% for d in devices %}
+      <tr>
+        <td>{{ d.name }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin_delete_device', device_id=d.id) }}" onsubmit="return confirm('Remover este telemovel?')">
+            <button class="btn-small" type="submit" style="background:var(--neon-orange);">Remover</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

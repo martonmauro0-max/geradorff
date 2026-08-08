@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span></div>
+  <div class="header-badge">Admin</div>
+</header>
+
+<div class="login-wrap">
+  <div class="glass-card">
+    <h2 style="margin-bottom:16px;">Login Administrativo</h2>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <input type="text" name="username" placeholder="Utilizador" required>
+      <input type="password" name="password" placeholder="Senha" required>
+      <button class="generate-btn" type="submit">Entrar</button>
+    </form>
+    <p style="margin-top:14px;"><a class="admin-link" href="{{ url_for('index') }}">Voltar ao site</a></p>
+  </div>
+</div>
+{% endblock %}

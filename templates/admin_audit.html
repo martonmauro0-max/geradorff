@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span> - Admin</div>
+  <a class="logout-link" href="{{ url_for('admin_logout') }}">Sair</a>
+</header>
+
+<div class="admin-wrap">
+  <div class="admin-menu">
+    <a class="btn-small" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a class="btn-small" href="{{ url_for('admin_configs') }}">Presets</a>
+    <a class="btn-small" href="{{ url_for('admin_devices') }}">Telemoveis</a>
+    <a class="btn-small" href="{{ url_for('admin_settings') }}">Configuracoes</a>
+    <a class="btn-small" href="{{ url_for('admin_audit') }}">Log de Auditoria</a>
+    <a class="btn-small" href="{{ url_for('admin_export_configs') }}">Exportar CSV</a>
+    <a class="btn-small" href="{{ url_for('admin_backup') }}">Backup DB</a>
+  </div>
+
+  <h2 style="margin-bottom:14px;">Log de Auditoria</h2>
+
+  <div class="glass-card">
+    <table class="data-table">
+      <tr><th>Utilizador</th><th>Acao</th><th>Detalhes</th><th>Data</th></tr>
+      {% for l in logs %}
+      <tr>
+        <td>{{ l.username }}</td>
+        <td>{{ l.action }}</td>
+        <td>{{ l.details }}</td>
+        <td>{{ l.created_at }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

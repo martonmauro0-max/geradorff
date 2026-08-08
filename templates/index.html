@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span></div>
+  <div class="header-badge">100% Gratis</div>
+</header>
+
+<main class="container">
+  <div class="hero">
+    <h1>Gerador de Sensibilidade Free Fire</h1>
+    <p>Escolhe o teu telemovel e estilo de jogo para gerar a sensibilidade ideal.</p>
+    <a href="{{ url_for('comparar') }}" class="compare-link-btn">Comparar duas sensibilidades</a>
+  </div>
+
+  <div class="glass-card">
+    <label class="field-label">Telemovel (marca e modelo)</label>
+    <input type="text" id="device-search" placeholder="Pesquisar: ex. Redmi Note 9 Pro Max" class="search-input">
+    <div class="option-grid" id="device-grid">
+      {% for d in devices %}
+      <button type="button" class="option-btn device-btn" data-value="{{ d }}">{{ d }}</button>
+      {% endfor %}
+    </div>
+    <div id="device-selected" class="selected-tag"></div>
+
+    <label class="field-label">Estilo de Jogo</label>
+    <div class="option-grid" id="style-grid">
+      {% for s in styles %}
+      <button type="button" class="option-btn" data-value="{{ s }}">{{ s }}</button>
+      {% endfor %}
+    </div>
+
+    <label class="field-label">Nivel de Sensibilidade</label>
+    <div class="option-grid" id="level-grid">
+      {% for l in levels %}
+      <button type="button" class="option-btn" data-value="{{ l }}">{{ l }}</button>
+      {% endfor %}
+    </div>
+
+    <div class="fav-actions">
+      <button class="btn-small" id="save-fav-btn">Guardar como favorito</button>
+    </div>
+
+    <button class="generate-btn" id="generate-btn">Gerar Sensibilidade</button>
+  </div>
+
+  <div class="glass-card" id="favorites-card" style="display:none;">
+    <div class="result-title">Os teus favoritos</div>
+    <div id="favorites-list"></div>
+  </div>
+
+  <div class="glass-card result-card" id="result-card">
+    <div class="result-title">Resultado da tua sensibilidade</div>
+    <div id="result-rows"></div>
+    <div class="result-actions">
+      <button class="btn-small" id="copy-btn">Copiar</button>
+      <button class="btn-small" id="whatsapp-btn">Partilhar no WhatsApp</button>
+    </div>
+  </div>
+</main>
+
+<footer class="main-footer">
+  Ja foram geradas <span class="stat" id="total-uses">{{ total_uses }}</span> configuracoes de sensibilidade.
+  <br>
+  <div class="support-links">
+    <a href="https://wa.me/258{{ settings.whatsapp }}" target="_blank">Suporte WhatsApp</a>
+    <a href="mailto:{{ settings.email }}">{{ settings.email }}</a>
+  </div>
+  <a class="admin-link" href="{{ url_for('admin_login') }}">Area administrativa</a>
+</footer>
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}

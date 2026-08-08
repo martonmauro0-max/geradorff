@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span> - Admin</div>
+  <a class="logout-link" href="{{ url_for('admin_logout') }}">Sair</a>
+</header>
+
+<div class="admin-wrap">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}{% endif %}
+  {% endwith %}
+
+  <div class="admin-menu">
+    <a class="btn-small" href="{{ url_for('admin_dashboard') }}">Dashboard</a>
+    <a class="btn-small" href="{{ url_for('admin_configs') }}">Presets</a>
+    <a class="btn-small" href="{{ url_for('admin_devices') }}">Telemoveis</a>
+    <a class="btn-small" href="{{ url_for('admin_settings') }}">Configuracoes</a>
+    <a class="btn-small" href="{{ url_for('admin_audit') }}">Log de Auditoria</a>
+    <a class="btn-small" href="{{ url_for('admin_export_configs') }}">Exportar CSV</a>
+    <a class="btn-small" href="{{ url_for('admin_backup') }}">Backup DB</a>
+  </div>
+
+  <h2 style="margin:20px 0 14px;">Configuracoes do Site</h2>
+
+  <div class="glass-card" style="max-width:420px;">
+    <form method="POST">
+      <label class="field-label">Nome do site</label>
+      <input type="text" name="site_title" value="{{ current.site_title }}"
+             style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:var(--text-light); margin-bottom:14px;">
+
+      <label class="field-label">WhatsApp de suporte</label>
+      <input type="text" name="whatsapp" value="{{ current.whatsapp }}"
+             style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:var(--text-light); margin-bottom:14px;">
+
+      <label class="field-label">Email de suporte</label>
+      <input type="text" name="email" value="{{ current.email }}"
+             style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:var(--text-light); margin-bottom:14px;">
+
+      <button class="btn-small" type="submit">Guardar</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block body %}
+<header class="main-header">
+  <div class="brand">Gerador<span>FF</span></div>
+  <a class="admin-link" href="{{ url_for('index') }}">Voltar</a>
+</header>
+
+<main class="container">
+  <div class="hero">
+    <h1>Comparar Sensibilidades</h1>
+    <p>Escolhe duas combinacoes para ver os valores lado a lado.</p>
+  </div>
+
+  <div class="glass-card">
+    <h3 style="margin-bottom:10px; color: var(--neon-blue);">Combinacao A</h3>
+    <select id="device-a" class="search-input">
+      {% for d in devices %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+    </select>
+    <select id="style-a" class="search-input">
+      {% for s in styles %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+    </select>
+    <select id="level-a" class="search-input">
+      {% for l in levels %}<option value="{{ l }}">{{ l }}</option>{% endfor %}
+    </select>
+  </div>
+
+  <div class="glass-card">
+    <h3 style="margin-bottom:10px; color: var(--neon-orange);">Combinacao B</h3>
+    <select id="device-b" class="search-input">
+      {% for d in devices %}<option value="{{ d }}">{{ d }}</option>{% endfor %}
+    </select>
+    <select id="style-b" class="search-input">
+      {% for s in styles %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+    </select>
+    <select id="level-b" class="search-input">
+      {% for l in levels %}<option value="{{ l }}">{{ l }}</option>{% endfor %}
+    </select>
+  </div>
+
+  <button class="generate-btn" id="compare-btn">Comparar</button>
+
+  <div class="glass-card" id="compare-result" style="display:none; margin-top:20px;">
+    <div class="result-title">Resultado da comparacao</div>
+    <div id="compare-rows"></div>
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/comparar.js') }}"></script>
+{% endblock %}
