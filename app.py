@@ -54,7 +54,7 @@ def close_db(exception=None):
         db.close()
 
 
-def clamp(value, low=1, high=100):
+def clamp(value, low=0, high=200):
     return max(low, min(high, value))
 
 
@@ -145,9 +145,9 @@ def init_db():
 
 
     base_values = {
-        "Baixa":  {"general": 40, "red_dot": 35, "scope_2x": 30, "scope_4x": 25, "sniper": 20, "free_look": 45},
-        "Media":  {"general": 65, "red_dot": 60, "scope_2x": 55, "scope_4x": 45, "sniper": 35, "free_look": 70},
-        "Alta":   {"general": 95, "red_dot": 90, "scope_2x": 80, "scope_4x": 65, "sniper": 55, "free_look": 100},
+        "Baixa":  {"general": 80, "red_dot": 70, "scope_2x": 60, "scope_4x": 50, "sniper": 40, "free_look": 90},
+        "Media":  {"general": 130, "red_dot": 120, "scope_2x": 110, "scope_4x": 90, "sniper": 70, "free_look": 140},
+        "Alta":   {"general": 190, "red_dot": 180, "scope_2x": 160, "scope_4x": 130, "sniper": 110, "free_look": 200},
     }
     style_adjust = {"Rush": 5, "Preciso na Cabeca": -5, "Controle Total": 0}
 
@@ -221,9 +221,9 @@ def index():
 
 
 BASE_VALUES = {
-    "Baixa":  {"general": 40, "red_dot": 35, "scope_2x": 30, "scope_4x": 25, "sniper": 20, "free_look": 45},
-    "Media":  {"general": 65, "red_dot": 60, "scope_2x": 55, "scope_4x": 45, "sniper": 35, "free_look": 70},
-    "Alta":   {"general": 95, "red_dot": 90, "scope_2x": 80, "scope_4x": 65, "sniper": 55, "free_look": 100},
+    "Baixa":  {"general": 80, "red_dot": 70, "scope_2x": 60, "scope_4x": 50, "sniper": 40, "free_look": 90},
+    "Media":  {"general": 130, "red_dot": 120, "scope_2x": 110, "scope_4x": 90, "sniper": 70, "free_look": 140},
+    "Alta":   {"general": 190, "red_dot": 180, "scope_2x": 160, "scope_4x": 130, "sniper": 110, "free_look": 200},
 }
 STYLE_ADJUST = {"Rush": 5, "Preciso na Cabeca": -5, "Controle Total": 0}
 

@@ -34,12 +34,12 @@
         <td>{{ c.device }}</td>
         <td>{{ c.style }}</td>
         <td>{{ c.level }}</td>
-        <td><input type="number" name="general" value="{{ c.general }}" min="1" max="100"></td>
-        <td><input type="number" name="red_dot" value="{{ c.red_dot }}" min="1" max="100"></td>
-        <td><input type="number" name="scope_2x" value="{{ c.scope_2x }}" min="1" max="100"></td>
-        <td><input type="number" name="scope_4x" value="{{ c.scope_4x }}" min="1" max="100"></td>
-        <td><input type="number" name="sniper" value="{{ c.sniper }}" min="1" max="100"></td>
-        <td><input type="number" name="free_look" value="{{ c.free_look }}" min="1" max="100"></td>
+        <td><input type="number" name="general" value="{{ c.general }}" min="0" max="200"></td>
+        <td><input type="number" name="red_dot" value="{{ c.red_dot }}" min="0" max="200"></td>
+        <td><input type="number" name="scope_2x" value="{{ c.scope_2x }}" min="0" max="200"></td>
+        <td><input type="number" name="scope_4x" value="{{ c.scope_4x }}" min="0" max="200"></td>
+        <td><input type="number" name="sniper" value="{{ c.sniper }}" min="0" max="200"></td>
+        <td><input type="number" name="free_look" value="{{ c.free_look }}" min="0" max="200"></td>
         <td><button class="btn-small" type="submit">Salvar</button></td>
         </form>
       </tr>
