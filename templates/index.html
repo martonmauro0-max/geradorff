@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% block body %}
 <header class="main-header">
-  <div class="brand">Gerador<span>FF</span></div>
-  <div class="header-badge">100% Gratis</div>
+  <div class="brand">{{ settings.site_title if settings and settings.site_title else "Gerador" }}{% if not settings or not settings.site_title %}<span>FF</span>{% endif %}</div>
+  <div class="header-links">
+    <a href="{{ url_for('sobre') }}">Sobre</a>
+    <a href="https://wa.me/258{{ settings.whatsapp }}" target="_blank">Suporte</a>
+  </div>
 </header>
 
 <main class="container">
@@ -15,9 +18,16 @@
   <div class="glass-card">
     <label class="field-label">Telemovel (marca e modelo)</label>
     <input type="text" id="device-search" placeholder="Pesquisar: ex. Redmi Note 9 Pro Max" class="search-input">
-    <div class="option-grid" id="device-grid">
-      {% for d in devices %}
-      <button type="button" class="option-btn device-btn" data-value="{{ d }}">{{ d }}</button>
+    <div id="device-grid">
+      {% for brand, models in devices_grouped.items() %}
+      <div class="device-brand-group" data-brand="{{ brand }}">
+        <div class="device-brand-title">{{ brand }}</div>
+        <div class="option-grid">
+          {% for d in models %}
+          <button type="button" class="option-btn device-btn" data-value="{{ d }}">{{ d }}</button>
+          {% endfor %}
+        </div>
+      </div>
       {% endfor %}
     </div>
     <div id="device-selected" class="selected-tag"></div>
@@ -36,6 +46,12 @@
       {% endfor %}
     </div>
 
+    <label class="field-label">DPI</label>
+    <div class="option-grid" id="dpi-grid">
+      <button type="button" class="option-btn" data-value="sem">Sem DPI</button>
+      <button type="button" class="option-btn active" data-value="com">Com DPI</button>
+    </div>
+
     <div class="fav-actions">
       <button class="btn-small" id="save-fav-btn">Guardar como favorito</button>
     </div>
@@ -46,6 +62,37 @@
   <div class="glass-card" id="favorites-card" style="display:none;">
     <div class="result-title">Os teus favoritos</div>
     <div id="favorites-list"></div>
+  </div>
+
+  <div class="glass-card">
+    <div class="result-title">Gerador de HUD</div>
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom:14px;">
+      Escolhe quantos dedos usas para jogar e sorteia uma variante de layout.
+    </p>
+    <label class="field-label">Numero de dedos</label>
+    <div class="option-grid" id="hud-fingers-grid">
+      <button type="button" class="option-btn" data-value="1">1 dedo</button>
+      <button type="button" class="option-btn" data-value="2">2 dedos</button>
+      <button type="button" class="option-btn" data-value="3">3 dedos</button>
+      <button type="button" class="option-btn" data-value="4">4 dedos</button>
+    </div>
+    <button class="generate-btn" id="hud-btn">Gerar HUD</button>
+    <div id="hud-result" style="display:none; margin-top:16px;">
+      <div class="result-row">
+        <span>Layout sorteado</span>
+        <span class="result-value" id="hud-value"></span>
+      </div>
+      <div class="hud-mock" id="hud-mock"></div>
+      <p style="color: var(--text-muted); font-size: 0.78rem; margin-bottom:6px;">
+        Codigo de referencia (para guardar/partilhar este layout, nao e importavel no jogo):
+      </p>
+      <div class="hud-code" id="hud-code"></div>
+      <div class="result-actions">
+        <button class="btn-small" id="hud-fav-btn">Guardar como favorito</button>
+        <button class="btn-small" id="hud-copy-btn">Copiar codigo</button>
+      </div>
+    </div>
+    <div id="hud-favorites-list" style="margin-top:10px;"></div>
   </div>
 
   <div class="glass-card result-card" id="result-card">
@@ -65,8 +112,6 @@
     <a href="https://wa.me/258{{ settings.whatsapp }}" target="_blank">Suporte WhatsApp</a>
     <a href="mailto:{{ settings.email }}">{{ settings.email }}</a>
   </div>
-  <a class="admin-link" href="{{ url_for('sobre') }}">Sobre este site</a>
-  <br>
   <a class="admin-link" href="{{ url_for('admin_login') }}">Area administrativa</a>
 </footer>
 

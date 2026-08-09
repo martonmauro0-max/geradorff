@@ -223,7 +223,7 @@ table.data-table input {
   color: var(--text-light);
 }
 .flash { color: var(--neon-orange); font-size: 0.85rem; margin-bottom: 10px; }
-a.admin-link { color: var(--text-muted); font-size: 0.75rem; text-decoration: none; }
+a.admin-link { color: var(--text-muted); font-size: 0.95rem; text-decoration: none; padding: 4px 0; display: inline-block; }
 a.logout-link { color: var(--neon-orange); font-size: 0.8rem; text-decoration: none; }
 
 .search-input {
@@ -276,7 +276,9 @@ a.logout-link { color: var(--neon-orange); font-size: 0.8rem; text-decoration: n
 .support-links a {
   color: var(--neon-blue);
   text-decoration: none;
-  font-size: 0.78rem;
+  font-size: 0.95rem;
+  padding: 4px 0;
+  display: inline-block;
 }
 
 .bar-row { margin-bottom: 12px; }
@@ -339,4 +341,67 @@ select.search-input {
   text-decoration: none;
   font-size: 0.82rem;
   font-weight: 600;
+}
+
+.header-links {
+  display: flex;
+  gap: 14px;
+}
+.header-links a {
+  color: var(--neon-blue);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--neon-blue);
+  padding: 6px 12px;
+  border-radius: 16px;
+}
+
+.device-brand-group { margin-bottom: 18px; }
+.device-brand-title {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--neon-orange);
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.hud-mock {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  margin: 14px 0;
+  overflow: hidden;
+}
+.hud-dot {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(245,255,0,0.25), rgba(255,122,0,0.25));
+  border: 1px solid var(--neon-yellow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--neon-yellow);
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+.hud-code {
+  font-family: monospace;
+  font-size: 1rem;
+  color: var(--neon-blue);
+  letter-spacing: 1px;
+  background: rgba(0,229,255,0.08);
+  padding: 8px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  margin: 8px 0;
 }

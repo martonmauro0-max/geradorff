@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block body %}
 <header class="main-header">
-  <div class="brand">Gerador<span>FF</span></div>
+  <div class="brand">{{ settings.site_title if settings and settings.site_title else "Gerador" }}{% if not settings or not settings.site_title %}<span>FF</span>{% endif %}</div>
   <div class="header-badge">Admin</div>
 </header>
 

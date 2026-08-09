@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Gerador de Sensibilidade Free Fire{% endblock %}</title>
+  <title>{% block title %}{{ settings.site_title if settings and settings.site_title else "Gerador de Sensibilidade Free Fire" }}{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>

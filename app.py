@@ -94,9 +94,15 @@ def init_db():
     cur.execute("""
         CREATE TABLE IF NOT EXISTS devices (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT UNIQUE NOT NULL
+            name TEXT UNIQUE NOT NULL,
+            max_dpi INTEGER DEFAULT 800
         )
     """)
+
+    cur.execute("PRAGMA table_info(devices)")
+    cols = [c[1] for c in cur.fetchall()]
+    if "max_dpi" not in cols:
+        cur.execute("ALTER TABLE devices ADD COLUMN max_dpi INTEGER DEFAULT 800")
 
     cur.execute("SELECT COUNT(*) AS c FROM devices")
     if cur.fetchone()[0] == 0:
@@ -198,6 +204,15 @@ def get_all_devices(db):
     return [r["name"] for r in rows]
 
 
+def get_devices_grouped(db):
+    names = get_all_devices(db)
+    groups = {}
+    for name in names:
+        brand = name.split(" ")[0] if " " in name else name
+        groups.setdefault(brand, []).append(name)
+    return dict(sorted(groups.items()))
+
+
 def get_settings():
     db = get_db()
     rows = db.execute("SELECT key, value FROM settings").fetchall()
@@ -217,7 +232,8 @@ def index():
     db = get_db()
     total_uses = db.execute("SELECT COUNT(*) AS c FROM stats").fetchone()["c"]
     devices = get_all_devices(db)
-    return render_template("index.html", devices=devices, styles=STYLES, levels=LEVELS, total_uses=total_uses)
+    devices_grouped = get_devices_grouped(db)
+    return render_template("index.html", devices=devices, devices_grouped=devices_grouped, styles=STYLES, levels=LEVELS, total_uses=total_uses)
 
 
 BASE_VALUES = {
@@ -231,6 +247,15 @@ STYLE_ADJUST = {"Rush": 5, "Preciso na Cabeca": -5, "Controle Total": 0}
 @app.route("/sobre")
 def sobre():
     return render_template("sobre.html")
+
+
+@app.route("/device-info")
+def device_info():
+    device = request.args.get("device", "")
+    db = get_db()
+    row = db.execute("SELECT max_dpi FROM devices WHERE name=?", (device,)).fetchone()
+    max_dpi = row["max_dpi"] if row and row["max_dpi"] else 800
+    return jsonify({"max_dpi": max_dpi})
 
 
 @app.route("/comparar")
@@ -372,8 +397,10 @@ def admin_devices():
     db = get_db()
     if request.method == "POST":
         name = request.form.get("name", "").strip()
+        max_dpi = request.form.get("max_dpi", "800").strip()
+        max_dpi = int(max_dpi) if max_dpi.isdigit() else 800
         if name:
-            db.execute("INSERT OR IGNORE INTO devices (name) VALUES (?)", (name,))
+            db.execute("INSERT OR IGNORE INTO devices (name, max_dpi) VALUES (?, ?)", (name, max_dpi))
             db.commit()
             log_action(session.get("username"), "adicionar_telemovel", name)
             flash("Telemovel adicionado: " + name)
@@ -381,6 +408,19 @@ def admin_devices():
 
     devices = db.execute("SELECT * FROM devices ORDER BY name").fetchall()
     return render_template("admin_devices.html", devices=devices)
+
+
+@app.route("/admin/devices/<int:device_id>/update-dpi", methods=["POST"])
+@login_required
+def admin_update_device_dpi(device_id):
+    max_dpi = request.form.get("max_dpi", "800").strip()
+    max_dpi = int(max_dpi) if max_dpi.isdigit() else 800
+    db = get_db()
+    db.execute("UPDATE devices SET max_dpi=? WHERE id=?", (max_dpi, device_id))
+    db.commit()
+    log_action(session.get("username"), "atualizar_dpi", "id=" + str(device_id))
+    flash("DPI maximo atualizado.")
+    return redirect(url_for("admin_devices"))
 
 
 @app.route("/admin/devices/<int:device_id>/delete", methods=["POST"])
