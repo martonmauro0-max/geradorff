@@ -89,7 +89,22 @@ def init_db():
         CREATE TABLE IF NOT EXISTS stats (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             device TEXT, style TEXT, level TEXT,
+            ip TEXT,
             created_at TEXT DEFAULT (datetime('now'))
+        )
+    """)
+
+    cur.execute("PRAGMA table_info(stats)")
+    cols = [c[1] for c in cur.fetchall()]
+    if "ip" not in cols:
+        cur.execute("ALTER TABLE stats ADD COLUMN ip TEXT")
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS blocked_ips (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip TEXT UNIQUE NOT NULL,
+            reason TEXT,
+            blocked_at TEXT DEFAULT (datetime('now'))
         )
     """)
 
@@ -272,12 +287,17 @@ def comparar():
 
 @app.route("/gerar", methods=["POST"])
 def gerar():
+    ip = request.remote_addr or "unknown"
+    db = get_db()
+    blocked = db.execute("SELECT id FROM blocked_ips WHERE ip=?", (ip,)).fetchone()
+    if blocked:
+        return jsonify({"error": "Acesso bloqueado."}), 403
+
     data = request.get_json(force=True)
     device = data.get("device")
     style = data.get("style")
     level = data.get("level")
 
-    db = get_db()
     valid_devices = get_all_devices(db)
 
     if device not in valid_devices or style not in STYLES or level not in LEVELS:
@@ -318,7 +338,7 @@ def gerar():
         "free_look": jitter(cfg["free_look"]),
     }
 
-    db.execute("INSERT INTO stats (device, style, level) VALUES (?, ?, ?)", (device, style, level))
+    db.execute("INSERT INTO stats (device, style, level, ip) VALUES (?, ?, ?, ?)", (device, style, level, ip))
     db.commit()
 
     total_uses = db.execute("SELECT COUNT(*) AS c FROM stats").fetchone()["c"]
