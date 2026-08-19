@@ -1,6 +1,8 @@
 import os
 import sqlite3
 import random
+import smtplib
+from email.mime.text import MIMEText
 from functools import wraps
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash, g
@@ -119,6 +121,9 @@ def init_db():
         "whatsapp": "849257170",
         "email": "martonmauro0@gmail.com",
         "site_title": "Gerador de Sensibilidade Free Fire",
+        "hero_title": "Gerador de Sensibilidade Free Fire",
+        "hero_subtitle": "Escolhe o teu telemovel e estilo de jogo para gerar a sensibilidade ideal.",
+        "generate_btn_text": "Gerar Sensibilidade",
     }
     for k, v in defaults.items():
         cur.execute("INSERT OR IGNORE INTO settings (key, value) VALUES (?, ?)", (k, v))
@@ -324,6 +329,28 @@ MAX_LOGIN_ATTEMPTS = 5
 LOGIN_WINDOW_MINUTES = 15
 
 
+def send_notification_email(subject, body):
+    gmail_user = os.environ.get("GMAIL_USER")
+    gmail_password = os.environ.get("GMAIL_APP_PASSWORD")
+    notify_to = os.environ.get("NOTIFY_EMAIL", gmail_user)
+
+    if not gmail_user or not gmail_password:
+        return False
+
+    try:
+        msg = MIMEText(body)
+        msg["Subject"] = subject
+        msg["From"] = gmail_user
+        msg["To"] = notify_to
+
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=10) as server:
+            server.login(gmail_user, gmail_password)
+            server.sendmail(gmail_user, [notify_to], msg.as_string())
+        return True
+    except Exception:
+        return False
+
+
 def log_action(username, action, details=""):
     db = get_db()
     db.execute("INSERT INTO audit_log (username, action, details) VALUES (?, ?, ?)", (username, action, details))
@@ -380,7 +407,13 @@ def admin_dashboard():
     by_style = db.execute("SELECT style, COUNT(*) AS c FROM stats GROUP BY style ORDER BY c DESC").fetchall()
     by_level = db.execute("SELECT level, COUNT(*) AS c FROM stats GROUP BY level ORDER BY c DESC").fetchall()
     recent = db.execute("SELECT * FROM stats ORDER BY id DESC LIMIT 15").fetchall()
-    return render_template("admin_dashboard.html", total_uses=total_uses, by_device=by_device, by_style=by_style, by_level=by_level, recent=recent)
+    by_day = db.execute(
+        """SELECT date(created_at) AS day, COUNT(*) AS c
+           FROM stats
+           WHERE created_at >= datetime('now', '-14 days')
+           GROUP BY day ORDER BY day ASC"""
+    ).fetchall()
+    return render_template("admin_dashboard.html", total_uses=total_uses, by_device=by_device, by_style=by_style, by_level=by_level, recent=recent, by_day=by_day)
 
 
 @app.route("/admin/configs")
@@ -447,7 +480,7 @@ def admin_audit():
 def admin_settings():
     db = get_db()
     if request.method == "POST":
-        for key in ["whatsapp", "email", "site_title"]:
+        for key in ["whatsapp", "email", "site_title", "hero_title", "hero_subtitle", "generate_btn_text"]:
             value = request.form.get(key, "").strip()
             if value:
                 db.execute("UPDATE settings SET value=? WHERE key=?", (value, key))

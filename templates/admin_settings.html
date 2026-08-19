@@ -39,5 +39,25 @@
       <button class="btn-small" type="submit">Guardar</button>
     </form>
   </div>
+
+  <h2 style="margin:24px 0 14px;">Textos da Pagina Principal</h2>
+
+  <div class="glass-card" style="max-width:420px;">
+    <form method="POST">
+      <label class="field-label">Titulo principal</label>
+      <input type="text" name="hero_title" value="{{ current.hero_title }}"
+             style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:var(--text-light); margin-bottom:14px;">
+
+      <label class="field-label">Subtitulo</label>
+      <input type="text" name="hero_subtitle" value="{{ current.hero_subtitle }}"
+             style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:var(--text-light); margin-bottom:14px;">
+
+      <label class="field-label">Texto do botao de gerar</label>
+      <input type="text" name="generate_btn_text" value="{{ current.generate_btn_text }}"
+             style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--glass-border); background:rgba(255,255,255,0.04); color:var(--text-light); margin-bottom:14px;">
+
+      <button class="btn-small" type="submit">Guardar Textos</button>
+    </form>
+  </div>
 </div>
 {% endblock %}

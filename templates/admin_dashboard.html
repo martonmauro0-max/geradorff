@@ -28,6 +28,20 @@
     </div>
   </div>
 
+  <div class="glass-card" style="margin-bottom:18px;">
+    <h3 style="margin-bottom:10px;">Ultimos 14 dias</h3>
+    {% set max_day = (by_day | map(attribute='c') | max) if by_day else 1 %}
+    {% if by_day|length == 0 %}
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Sem dados suficientes ainda.</p>
+    {% endif %}
+    {% for row in by_day %}
+    <div class="bar-row">
+      <div class="bar-label">{{ row.day }} ({{ row.c }})</div>
+      <div class="bar-track"><div class="bar-fill" style="width: {{ (row.c / max_day * 100) | round }}%;"></div></div>
+    </div>
+    {% endfor %}
+  </div>
+
   <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:18px;">
     <div class="glass-card">
       <h3 style="margin-bottom:10px;">Por Telemovel</h3>

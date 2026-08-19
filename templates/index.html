@@ -10,8 +10,8 @@
 
 <main class="container">
   <div class="hero">
-    <h1>Gerador de Sensibilidade Free Fire</h1>
-    <p>Escolhe o teu telemovel e estilo de jogo para gerar a sensibilidade ideal.</p>
+    <h1>{{ settings.hero_title if settings and settings.hero_title else "Gerador de Sensibilidade Free Fire" }}</h1>
+    <p>{{ settings.hero_subtitle if settings and settings.hero_subtitle else "Escolhe o teu telemovel e estilo de jogo para gerar a sensibilidade ideal." }}</p>
     <a href="{{ url_for('comparar') }}" class="compare-link-btn">Comparar duas sensibilidades</a>
   </div>
 
@@ -56,7 +56,7 @@
       <button class="btn-small" id="save-fav-btn">Guardar como favorito</button>
     </div>
 
-    <button class="generate-btn" id="generate-btn">Gerar Sensibilidade</button>
+    <button class="generate-btn" id="generate-btn">{{ settings.generate_btn_text if settings and settings.generate_btn_text else "Gerar Sensibilidade" }}</button>
   </div>
 
   <div class="glass-card" id="favorites-card" style="display:none;">
