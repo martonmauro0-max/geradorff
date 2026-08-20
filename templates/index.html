@@ -5,6 +5,12 @@
   <div class="header-links">
     <a href="{{ url_for('sobre') }}">Sobre</a>
     <a href="https://wa.me/258{{ settings.whatsapp }}" target="_blank">Suporte</a>
+    {% if session.get('user_name') %}
+      <a href="{{ url_for('user_logout') }}">Ola, {{ session.get('user_name') }} - Sair</a>
+    {% else %}
+      <a href="{{ url_for('user_login') }}">Entrar</a>
+      <a href="{{ url_for('registar') }}">Registar</a>
+    {% endif %}
   </div>
 </header>
 

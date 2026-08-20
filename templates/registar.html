@@ -2,14 +2,13 @@
 {% block body %}
 <header class="main-header">
   <div class="brand">{{ settings.site_title if settings and settings.site_title else "Gerador" }}{% if not settings or not settings.site_title %}<span>FF</span>{% endif %}</div>
-  <div class="header-badge">Admin</div>
 </header>
 
 <div class="login-wrap">
   <div class="glass-card">
     <div class="login-icon">🔒</div>
-    <h2 class="login-title">Bem-vindo de volta!</h2>
-    <p class="login-subtitle">Faz login para continuar</p>
+    <h2 class="login-title">Criar Conta</h2>
+    <p class="login-subtitle">Regista-te para comecar</p>
 
     {% with messages = get_flashed_messages() %}
       {% if messages %}
@@ -20,15 +19,18 @@
     <form method="POST">
       <div class="input-icon-wrap">
         <span class="input-icon">👤</span>
-        <input type="text" name="username" placeholder="Utilizador" required>
+        <input type="text" name="username" placeholder="Escolhe um utilizador" required>
       </div>
       <div class="input-icon-wrap">
         <span class="input-icon">🔑</span>
-        <input type="password" name="password" placeholder="Senha" required>
+        <input type="password" name="password" placeholder="Escolhe uma senha (min. 6 caracteres)" required>
       </div>
-      <button class="generate-btn" type="submit">Entrar</button>
+      <button class="generate-btn" type="submit">Criar Conta</button>
     </form>
-    <p style="margin-top:14px; text-align:center;"><a class="admin-link" href="{{ url_for('index') }}">Voltar ao site</a></p>
+    <p style="margin-top:14px; text-align:center;">
+      Ja tens conta? <a class="admin-link" href="{{ url_for('user_login') }}">Entrar</a>
+    </p>
+    <p style="margin-top:8px; text-align:center;"><a class="admin-link" href="{{ url_for('index') }}">Voltar ao site</a></p>
   </div>
 </div>
 {% endblock %}

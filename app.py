@@ -69,9 +69,18 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            is_admin INTEGER DEFAULT 0
+            is_admin INTEGER DEFAULT 0,
+            is_active INTEGER DEFAULT 1,
+            created_at TEXT DEFAULT (datetime('now'))
         )
     """)
+
+    cur.execute("PRAGMA table_info(users)")
+    cols = [c[1] for c in cur.fetchall()]
+    if "is_active" not in cols:
+        cur.execute("ALTER TABLE users ADD COLUMN is_active INTEGER DEFAULT 1")
+    if "created_at" not in cols:
+        cur.execute("ALTER TABLE users ADD COLUMN created_at TEXT")
 
     cur.execute("""
         CREATE TABLE IF NOT EXISTS configs (
@@ -283,6 +292,67 @@ def comparar():
     db = get_db()
     devices = get_all_devices(db)
     return render_template("comparar.html", devices=devices, styles=STYLES, levels=LEVELS)
+
+
+@app.route("/registar", methods=["GET", "POST"])
+def registar():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+
+        if len(username) < 3:
+            flash("Utilizador precisa ter pelo menos 3 caracteres.")
+            return render_template("registar.html")
+        if len(password) < 6:
+            flash("Senha precisa ter pelo menos 6 caracteres.")
+            return render_template("registar.html")
+
+        db = get_db()
+        existing = db.execute("SELECT id FROM users WHERE username=?", (username,)).fetchone()
+        if existing:
+            flash("Esse utilizador ja existe.")
+            return render_template("registar.html")
+
+        db.execute(
+            "INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, 0)",
+            (username, generate_password_hash(password)),
+        )
+        db.commit()
+        flash("Conta criada com sucesso! Podes entrar agora.")
+        return redirect(url_for("user_login"))
+
+    return render_template("registar.html")
+
+
+@app.route("/entrar", methods=["GET", "POST"])
+def user_login():
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+
+        db = get_db()
+        user = db.execute("SELECT * FROM users WHERE username=?", (username,)).fetchone()
+
+        if user and not user["is_active"]:
+            flash("Esta conta foi desativada. Contacta o suporte.")
+            return render_template("user_login.html")
+
+        if user and check_password_hash(user["password_hash"], password):
+            session["user_uid"] = user["id"]
+            session["user_name"] = user["username"]
+            flash("Bem-vindo, " + user["username"] + "!")
+            return redirect(url_for("index"))
+
+        flash("Utilizador ou senha incorretos.")
+
+    return render_template("user_login.html")
+
+
+@app.route("/sair-conta")
+def user_logout():
+    session.pop("user_uid", None)
+    session.pop("user_name", None)
+    return redirect(url_for("index"))
 
 
 @app.route("/gerar", methods=["POST"])
@@ -534,6 +604,44 @@ def admin_unblock_ip():
         log_action(session.get("username"), "desbloquear_ip", ip)
         flash("IP desbloqueado: " + ip)
     return redirect(url_for("admin_visitors"))
+
+
+@app.route("/admin/users")
+@login_required
+def admin_users():
+    db = get_db()
+    users = db.execute(
+        "SELECT * FROM users WHERE is_admin=0 ORDER BY created_at DESC"
+    ).fetchall()
+    return render_template("admin_users.html", users=users)
+
+
+@app.route("/admin/users/<int:user_id>/toggle", methods=["POST"])
+@login_required
+def admin_toggle_user(user_id):
+    db = get_db()
+    user = db.execute("SELECT * FROM users WHERE id=?", (user_id,)).fetchone()
+    if user:
+        new_status = 0 if user["is_active"] else 1
+        db.execute("UPDATE users SET is_active=? WHERE id=?", (new_status, user_id))
+        db.commit()
+        action = "ativar_conta" if new_status else "desativar_conta"
+        log_action(session.get("username"), action, user["username"])
+        flash("Conta " + ("ativada" if new_status else "desativada") + ": " + user["username"])
+    return redirect(url_for("admin_users"))
+
+
+@app.route("/admin/users/<int:user_id>/delete", methods=["POST"])
+@login_required
+def admin_delete_user(user_id):
+    db = get_db()
+    user = db.execute("SELECT * FROM users WHERE id=?", (user_id,)).fetchone()
+    if user:
+        db.execute("DELETE FROM users WHERE id=?", (user_id,))
+        db.commit()
+        log_action(session.get("username"), "eliminar_conta", user["username"])
+        flash("Conta eliminada: " + user["username"])
+    return redirect(url_for("admin_users"))
 
 
 @app.route("/admin/settings", methods=["GET", "POST"])
