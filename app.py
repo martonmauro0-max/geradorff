@@ -495,6 +495,47 @@ def admin_audit():
     return render_template("admin_audit.html", logs=logs)
 
 
+@app.route("/admin/visitors")
+@login_required
+def admin_visitors():
+    db = get_db()
+    visitors = db.execute(
+        """SELECT ip, COUNT(*) AS total, MAX(created_at) AS last_seen
+           FROM stats WHERE ip IS NOT NULL
+           GROUP BY ip ORDER BY total DESC"""
+    ).fetchall()
+    blocked = db.execute("SELECT ip FROM blocked_ips").fetchall()
+    blocked_ips = set(r["ip"] for r in blocked)
+    return render_template("admin_visitors.html", visitors=visitors, blocked_ips=blocked_ips)
+
+
+@app.route("/admin/visitors/block", methods=["POST"])
+@login_required
+def admin_block_ip():
+    ip = request.form.get("ip", "").strip()
+    reason = request.form.get("reason", "").strip()
+    if ip:
+        db = get_db()
+        db.execute("INSERT OR IGNORE INTO blocked_ips (ip, reason) VALUES (?, ?)", (ip, reason))
+        db.commit()
+        log_action(session.get("username"), "bloquear_ip", ip)
+        flash("IP bloqueado: " + ip)
+    return redirect(url_for("admin_visitors"))
+
+
+@app.route("/admin/visitors/unblock", methods=["POST"])
+@login_required
+def admin_unblock_ip():
+    ip = request.form.get("ip", "").strip()
+    if ip:
+        db = get_db()
+        db.execute("DELETE FROM blocked_ips WHERE ip=?", (ip,))
+        db.commit()
+        log_action(session.get("username"), "desbloquear_ip", ip)
+        flash("IP desbloqueado: " + ip)
+    return redirect(url_for("admin_visitors"))
+
+
 @app.route("/admin/settings", methods=["GET", "POST"])
 @login_required
 def admin_settings():
