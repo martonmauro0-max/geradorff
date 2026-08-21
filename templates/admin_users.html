@@ -22,36 +22,31 @@
     <a class="btn-small" href="{{ url_for('admin_backup') }}">Backup DB</a>
   </div>
 
-  <h2 style="margin-bottom:14px;">Visitantes do Site</h2>
+  <h2 style="margin-bottom:14px;">Contas Registadas</h2>
 
   <div class="glass-card">
     <table class="data-table">
-      <tr><th>IP</th><th>Geracoes</th><th>Ultima vez</th><th>Estado</th><th></th></tr>
-      {% for v in visitors %}
+      <tr><th>Utilizador</th><th>Criada em</th><th>Estado</th><th></th></tr>
+      {% for u in users %}
       <tr>
-        <td>{{ v.ip }}</td>
-        <td>{{ v.total }}</td>
-        <td>{{ v.last_seen }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.created_at }}</td>
         <td>
-          {% if v.ip in blocked_ips %}
-            <span style="color: var(--neon-orange); font-weight:700;">Bloqueado</span>
+          {% if u.is_active %}
+            <span style="color: var(--neon-blue);">Ativa</span>
           {% else %}
-            <span style="color: var(--neon-blue);">Ativo</span>
+            <span style="color: var(--neon-orange); font-weight:700;">Desativada</span>
           {% endif %}
         </td>
-        <td>
-          {% if v.ip in blocked_ips %}
-            <form method="POST" action="{{ url_for('admin_unblock_ip') }}">
-              <input type="hidden" name="ip" value="{{ v.ip }}">
-              <button class="btn-small" type="submit">Desbloquear</button>
-            </form>
-          {% else %}
-            <form method="POST" action="{{ url_for('admin_block_ip') }}" onsubmit="return confirm('Bloquear este IP?')">
-              <input type="hidden" name="ip" value="{{ v.ip }}">
-              <input type="text" name="reason" placeholder="Motivo (opcional)" style="width:100px; margin-right:6px;">
-              <button class="btn-small" type="submit" style="background:var(--neon-orange);">Bloquear</button>
-            </form>
-          {% endif %}
+        <td style="display:flex; gap:6px;">
+          <form method="POST" action="{{ url_for('admin_toggle_user', user_id=u.id) }}">
+            <button class="btn-small" type="submit">
+              {{ "Desativar" if u.is_active else "Ativar" }}
+            </button>
+          </form>
+          <form method="POST" action="{{ url_for('admin_delete_user', user_id=u.id) }}" onsubmit="return confirm('Eliminar esta conta permanentemente?')">
+            <button class="btn-small" type="submit" style="background:var(--neon-orange);">Eliminar</button>
+          </form>
         </td>
       </tr>
       {% endfor %}
