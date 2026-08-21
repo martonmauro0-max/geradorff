@@ -228,6 +228,15 @@ def login_required(f):
     return wrapper
 
 
+def user_login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not session.get("user_uid"):
+            return redirect(url_for("user_login"))
+        return f(*args, **kwargs)
+    return wrapper
+
+
 def get_all_devices(db):
     rows = db.execute("SELECT name FROM devices ORDER BY name").fetchall()
     return [r["name"] for r in rows]
@@ -257,6 +266,7 @@ def inject_settings():
 
 
 @app.route("/")
+@user_login_required
 def index():
     db = get_db()
     total_uses = db.execute("SELECT COUNT(*) AS c FROM stats").fetchone()["c"]
@@ -274,11 +284,13 @@ STYLE_ADJUST = {"Rush": 5, "Preciso na Cabeca": -5, "Controle Total": 0}
 
 
 @app.route("/sobre")
+@user_login_required
 def sobre():
     return render_template("sobre.html")
 
 
 @app.route("/device-info")
+@user_login_required
 def device_info():
     device = request.args.get("device", "")
     db = get_db()
@@ -288,6 +300,7 @@ def device_info():
 
 
 @app.route("/comparar")
+@user_login_required
 def comparar():
     db = get_db()
     devices = get_all_devices(db)
@@ -356,6 +369,7 @@ def user_logout():
 
 
 @app.route("/gerar", methods=["POST"])
+@user_login_required
 def gerar():
     ip = request.remote_addr or "unknown"
     db = get_db()
